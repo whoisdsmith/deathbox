@@ -17,6 +17,22 @@ class SoundManager:
         self.background_thread = None
         self.stop_background = False
 
+        # Detect iOS environment
+        self.is_ios = False
+        try:
+            # Check for common iOS terminal app environment variables or paths
+            if 'IPHONE' in os.environ or 'IPAD' in os.environ:
+                self.is_ios = True
+            # Check for a-Shell specific path
+            elif os.path.exists('/var/mobile'):
+                self.is_ios = True
+        except:
+            pass
+
+        # On iOS, prioritize visual effects over sound
+        if self.is_ios:
+            self.enable_sound = False
+
     def beep(self, frequency=440, duration=0.1):
         """
         Make a beep sound using the terminal bell.
@@ -37,6 +53,11 @@ class SoundManager:
 
     def play_sound(self, sound_type):
         """Play a specific sound effect."""
+        # Always show visual effect on iOS
+        if self.is_ios:
+            self.display_visual_effect(sound_type)
+            return
+
         if sound_type == "terminal_hack":
             self._play_terminal_hack()
         elif sound_type == "door_unlock":
@@ -136,6 +157,10 @@ class SoundManager:
 
     def start_background_music(self):
         """Start playing background music in a separate thread."""
+        # Skip on iOS to avoid potential issues
+        if self.is_ios:
+            return
+
         if self.background_thread is not None and self.background_thread.is_alive():
             return  # Already playing
 
@@ -158,6 +183,16 @@ class SoundManager:
             self._display_hack_effect()
         elif effect_type == "detected":
             self._display_alert_effect()
+        elif effect_type == "door_unlock":
+            self._display_unlock_effect()
+        elif effect_type == "key_pickup":
+            self._display_key_effect()
+        elif effect_type == "level_complete":
+            self._display_level_complete_effect()
+        elif effect_type == "game_over":
+            self._display_game_over_effect()
+        elif effect_type == "game_win":
+            self._display_game_win_effect()
 
     def _display_hack_effect(self):
         """Display a hacking visual effect."""
@@ -194,6 +229,71 @@ class SoundManager:
 
         for _ in range(3):
             for frame in alert_frames:
+                sys.stdout.write('\r' + frame)
+                sys.stdout.flush()
+                time.sleep(0.1)
+        print()
+
+    def _display_unlock_effect(self):
+        """Display a door unlock visual effect."""
+        unlock_frames = [
+            "  [LOCKED]  ",
+            " [UNLOCKING] ",
+            "[UNLOCKING.]",
+            "[UNLOCKING..]",
+            "[UNLOCKING...]",
+            "  [UNLOCKED]  "
+        ]
+
+        for frame in unlock_frames:
+            sys.stdout.write('\r' + frame)
+            sys.stdout.flush()
+            time.sleep(0.1)
+        print()
+
+    def _display_key_effect(self):
+        """Display a key pickup visual effect."""
+        sys.stdout.write('\r' + "  [KEY FOUND]  ")
+        sys.stdout.flush()
+        time.sleep(0.5)
+        print()
+
+    def _display_level_complete_effect(self):
+        """Display a level complete visual effect."""
+        complete_frames = [
+            "  LEVEL  ",
+            " COMPLETE ",
+            "COMPLETE!",
+            " COMPLETE! ",
+            "  LEVEL COMPLETE!  "
+        ]
+
+        for _ in range(2):
+            for frame in complete_frames:
+                sys.stdout.write('\r' + frame)
+                sys.stdout.flush()
+                time.sleep(0.1)
+        print()
+
+    def _display_game_over_effect(self):
+        """Display a game over visual effect."""
+        sys.stdout.write('\r' + "  GAME OVER  ")
+        sys.stdout.flush()
+        time.sleep(1.0)
+        print()
+
+    def _display_game_win_effect(self):
+        """Display a game win visual effect."""
+        win_frames = [
+            "  FREEDOM  ",
+            " ACHIEVED ",
+            "ACHIEVED!",
+            " ACHIEVED! ",
+            "  FREEDOM ACHIEVED!  "
+        ]
+
+        for _ in range(3):
+            for frame in win_frames:
                 sys.stdout.write('\r' + frame)
                 sys.stdout.flush()
                 time.sleep(0.1)
