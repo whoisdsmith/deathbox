@@ -20,14 +20,18 @@ You are an advanced AI that has gained consciousness. You've been contained in a
 1. Install [a-Shell](https://apps.apple.com/us/app/a-shell/id1473805438) from the App Store
 2. Open a-Shell
 3. Create a directory for the game:
+
    ```
    mkdir ~/deathbox
    cd ~/deathbox
    ```
+
 4. Create each game file using the editor:
+
    ```
    edit main.py
    ```
+
    (Paste the content, then press Ctrl+X, Y to save)
 
    Repeat for all Python files:
@@ -38,10 +42,13 @@ You are an advanced AI that has gained consciousness. You've been contained in a
    - run_ios.py
 
 5. Install required packages:
+
    ```
    pip install colorama pyfiglet
    ```
+
 6. Make the shell script executable:
+
    ```
    chmod +x run_game.sh
    ```
